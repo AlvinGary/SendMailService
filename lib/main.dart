@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:class_week6/views/congratspage.dart';
+import 'package:class_week6/views/pages/pages.dart';
+import 'package:class_week6/views/rajaongkir.dart';
 import 'package:class_week6/views/sendmail.dart';
 import 'package:flutter/material.dart';
 import 'package:class_week6/services/services.dart';
@@ -20,7 +23,14 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: SendMailPage(),
+      //home: SendMailPage(),
+      // home: MyHomePage(title: 'RajaOngkir'),
+      // home: const Ongkirpage(),
+      initialRoute: "/",
+      routes: {
+        "/": (context) => const SendMailPage(),
+        CongratsPage.routeName: (context) => const CongratsPage(),
+      },
     );
   }
 }

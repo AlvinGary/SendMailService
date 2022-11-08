@@ -5,3 +5,4 @@ import 'package:http/http.dart' as http;
 
 part "rajaongkirservice.dart";
 part "sendmailservice.dart";
+part "masterdataservice.dart";

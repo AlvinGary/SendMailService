@@ -1,8 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:class_week6/views/congratspage.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:uni_links/uni_links.dart';
 
 import '../services/services.dart';
 
@@ -17,22 +23,79 @@ class _SendMailPageState extends State<SendMailPage> {
   @override
   void initState() {
     super.initState();
+    _handleIncomingLinks();
+    _handleInitialUri();
   }
 
+  Uri? _initialUri;
+  Uri? _latestUri;
+  Object? _err;
+  StreamSubscription? _sub;
   final _mailKey = GlobalKey<FormState>();
   final ctrlEmail = TextEditingController();
+  bool _initialUriHandled = false;
 
   @override
   void dispose() {
     ctrlEmail.dispose();
+    _sub?.cancel();
     super.dispose();
+  }
+
+  void _handleIncomingLinks() {
+    if (!kIsWeb) {
+      _sub = uriLinkStream.listen((Uri? uri) {
+        if (!mounted) return;
+        print('got uri: $uri');
+        Navigator.pushAndRemoveUntil<dynamic>(
+            context,
+            MaterialPageRoute<dynamic>(builder: (context) => CongratsPage()),
+            (route) => false);
+        setState(() {
+          _latestUri = uri;
+          _err = null;
+        });
+      }, onError: (Object err) {
+        if (!mounted) return;
+        print('got err: $err');
+        setState(() {
+          _latestUri = null;
+          _err = err;
+        });
+      });
+    }
+  }
+
+  Future<void> _handleInitialUri() async {
+    if (!_initialUriHandled) {
+      _initialUriHandled = true;
+      print('_handleInitialUri called');
+      try {
+        final uri = await getInitialUri();
+        if (uri == null) {
+          print('no initial uri');
+        } else {
+          print('got initial uri: $uri');
+          // Navigator.pushAndRemoveUntil<dynamic>(
+          //     context,
+          //     MaterialPageRoute<dynamic>(builder: (context) => CongratsPage()),
+          //     (route) => false);
+        }
+        if (!mounted) return;
+        setState(() => _initialUri = uri);
+      } on FormatException catch (err) {
+        if (!mounted) return;
+        print('malformed initial uri');
+        setState(() => _err = err);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Send Mail Page"),
+        title: Text("AFL Cloud Computing"),
       ),
       body: Container(
         padding: EdgeInsets.all(28),
@@ -67,6 +130,7 @@ class _SendMailPageState extends State<SendMailPage> {
           if (_mailKey.currentState!.validate()) {
             await SendEmailService.sendEmail(ctrlEmail.text).then((value) {
               var result = json.decode(value.body);
+              print(result);
               Fluttertoast.showToast(
                 msg: result['message'].toString(),
                 toastLength: Toast.LENGTH_SHORT,
