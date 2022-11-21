@@ -25,12 +25,12 @@ class MyApp extends StatelessWidget {
       ),
       //home: SendMailPage(),
       // home: MyHomePage(title: 'RajaOngkir'),
-      // home: const Ongkirpage(),
-      initialRoute: "/",
-      routes: {
-        "/": (context) => const SendMailPage(),
-        CongratsPage.routeName: (context) => const CongratsPage(),
-      },
+      home: const Ongkirpage(),
+      // initialRoute: "/",
+      // routes: {
+      //   "/": (context) => const SendMailPage(),
+      //   CongratsPage.routeName: (context) => const CongratsPage(),
+      // },
     );
   }
 }

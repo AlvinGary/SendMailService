@@ -26,4 +26,17 @@ class UiLoading {
       ),
     );
   }
+
+  static Container loadingDD() {
+    return Container(
+      alignment: Alignment.center,
+      width: 30,
+      height: 30,
+      color: Colors.transparent,
+      child: SpinKitFadingCircle(
+        size: 30,
+        color: Colors.indigoAccent,
+      ),
+    );
+  }
 }
